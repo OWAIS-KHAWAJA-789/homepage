@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 600px;
+            margin: auto;
+        }
+        a {
+            display: block;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        a:hover {
+            background-color: #555;
+        }
+        .search-bar {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        .clock {
+            font-size: 1.5em;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        .todo-container {
+            margin-top: 30px;
+            text-align: left;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .todo-container h2 {
+            text-align: center;
+        }
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #444;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .todo-item input {
+            background: none;
+            border: none;
+            color: white;
+            width: 100%;
+        }
+        .todo-item button {
+            background-color: red;
+            border: none;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("clock").innerText = now.toLocaleTimeString();
+        }
+        function focusSearch() {
+            setTimeout(() => {
+            document.getElementById("search-input").focus();
+            }, 100); // Small delay ensures the browser loads the page first
+        }
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            const taskList = document.getElementById("task-list");
+            taskList.innerHTML = "";
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement("div");
+                taskItem.classList.add("todo-item");
+                taskItem.innerHTML = `
+                    <input type="text" value="${task}" oninput="updateTask(${index}, this.value)">
+                    <button onclick="deleteTask(${index})">X</button>
+                `;
+                taskList.appendChild(taskItem);
+            });
+        }
+        function addTask() {
+            const taskInput = document.getElementById("new-task");
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.push(taskInput.value);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            taskInput.value = "";
+            loadTasks();
+        }
+        function updateTask(index, value) {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks[index] = value;
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+        function deleteTask(index) {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.splice(index, 1);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            loadTasks();
+        }
+        window.onload = function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            setTimeout(focusSearch, 100); // Delay helps override browser behavior
+            loadTasks();
+        };
+
+    </script>
+</head>
+<body>
+    <div class="clock" id="clock"></div>
+    <h1>Welcome #AP2KMO</h1>
+    
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search Google..." onkeydown="if(event.key==='Enter') window.location='https://www.google.com/search?q='+this.value;">
+    </div>
+    
+    <div class="links">
+        <a href="https://www.github.com" target="_blank">GitHub</a>
+        <a href="https://mail.google.com" target="_blank">Gmail</a>
+        <a href="https://www.wikipedia.org" target="_blank">Wikipedia</a>
+        <a href="https://chatgpt.com" target="_blank">ChatGPT</a>
+        <a href="https://classroom.google.com/" target="_blank">classroom</a>
+        <a href="https://www.reddit.com" target="_blank">Reddit</a>
+    </div>
+    
+    <div class="todo-container">
+        <h2>Notes</h2>
+        <input type="text" id="new-task" placeholder="Add new task...">
+        <button onclick="addTask()">Add</button>
+        <div id="task-list"></div>
+    </div>
+</body>
+</html>
